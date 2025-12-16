@@ -16,7 +16,7 @@ export const API_PATHS = {
   },
 
   TASKS: {
-    DATA: "/api/tasks/dashboard-data", //fet dashboard data
+    GET_DASHBOARD_DATA: "/api/tasks/dashboard-data", //fet dashboard data
     GET_USER_DASHBOARD_DATA: "/api/tasks/user-dashboard-data", //ger user dashboard data
     GET_ALL_TASKS: "/api/tasks", //get all tasks {admin:all, user:only assgned tasks}
     GET_TASK_BY_ID: (taskId) => `/api/tasks/${taskId}`, //get task by id
