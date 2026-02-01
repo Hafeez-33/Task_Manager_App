@@ -57,6 +57,7 @@ const registerUser = async (req, res) => {
   }
 };
 
+
 // @desc Register a new user
 // @route POST /api/auth/login
 // @access Public
@@ -66,13 +67,13 @@ const loginUser = async (req, res) => {
     //Check for user email
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     //Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
     //Return user data with jwt token
     res.status(200).json({

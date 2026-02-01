@@ -7,6 +7,7 @@ import axiosInstance from "../../utils/axiosinstance";
 import { API_PATHS } from "../../utils/apiPath";
 import { UserContext } from "../../context/userContext";
 import uploadimage from "../../utils/uploadimage";
+import { validateEmail } from "../../utils/helper";
 
 const SignUp = () => {
   const [profilePic, setProfilePic] = useState(null);
@@ -51,7 +52,7 @@ const SignUp = () => {
         profileImageUrl = imgUploadRes.data.url || "";
       }
 
-      const response = await axiosInstance.post(API_PATHS.AUTH.SIGNUP, {
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         name: fullName,
         email,
         password,

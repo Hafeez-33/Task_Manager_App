@@ -16,21 +16,21 @@ const getUsers = async (req, res) => {
       users.map(async (user) => {
         const pendingTasks = await Task.countDocuments({
           assignedTo: user._id,
-          status: "pending",
+          status: "Pending",
         });
         const inProgressTasks = await Task.countDocuments({
           assignedTo: user._id,
-          status: "in-progress",
+          status: "In-Progress",
         });
-        const completedTaskss = await Task.countDocuments({
+        const completedTasks = await Task.countDocuments({
           assignedTo: user._id,
-          status: "completed",
+          status: "Completed",
         });
         return {
           ...user._doc, //include all existing user data
           pendingTasks,
           inProgressTasks,
-          completedTaskss,
+          completedTasks,
         };
       })
     );

@@ -24,29 +24,35 @@ const exportTasksReport = async (req, res) => {
     ];
 
     tasks.forEach((task) => {
-      const assignedTo = task.assignedTo
-        .map((user) => `${user.name} (${user.email})`)
-        .join(", ");
+      // const assignedTo = task.assignedTo
+      //   .map((user) => `${user.name} (${user.email})`)
+      //   .join(", ");
+      const assignedTo = Array.isArray(task.assignedTo)
+        ? task.assignedTo.map((u) => `${u.name} (${u.email})`).join(", ")
+        : "Unassigned";
+
       worksheet.addRow({
         _id: task._id,
         title: task.title,
         description: task.description,
         priority: task.priority,
         status: task.status,
-        assignedTo: assignedTo,
-        dueDate: task.dueDate,
         assignedTo: assignedTo || "Unassigned",
+        dueDate: task.duedate
+          ? task.duedate.toISOString().split("T")[0]
+          : "N/A",
+        // assignedTo: assignedTo || "Unassigned",
       });
     });
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.setHeader(
       "Content-Disposition",
-      'attachment; filename="tasks_report.xlsx"'
+      'attachment; filename="tasks_report.xlsx"',
     );
 
     return workbook.xlsx.write(res).then(() => {
@@ -64,39 +70,64 @@ const exportTasksReport = async (req, res) => {
 //@access Private/Admin
 const exportUsersReport = async (req, res) => {
   try {
-    const users = await user.find().select("name email _id");
+    const users = await user.find().select("name email _id").lean();
     const userTasks = await Task.find().populate(
       "assignedTo",
-      "name email _id"
+      "name email _id",
     );
 
     const userTaskMap = {};
+
     users.forEach((user) => {
       userTaskMap[user._id] = {
         name: user.name,
         email: user.email,
         taskCount: 0,
         pendingTasks: 0,
-        completedTasks: 0,
+        inProgressTasks: 0,
         completedTasks: 0,
       };
     });
 
+    // userTasks.forEach((task) => {
+    //   if (task.assignedTo) {
+    //     task.assignedTo.forEach((assignedUser) => {
+    //       if (userTaskMap[assignedUser._id]) {
+    //         userTaskMap[assignedUser._id].taskCount += 1;
+    //         if (task.status === "Pending") {
+    //           userTaskMap[assignedUser._id].pendingTasks += 1;
+    //         } else if (task.status === "In-Progress") {
+    //           userTaskMap[assignedUser._id].inProgressTasks += 1;
+    //         } else if (task.status === "Completed") {
+    //           userTaskMap[assignedUser._id].completedTasks += 1;
+    //         }
+    //       }
+    //     });
+    //   }
+    // });
+
     userTasks.forEach((task) => {
-      if (task.assignedTo) {
-        task.assignedTo.forEach((assignedUser) => {
-          if (userTaskMap[assignedUser._id]) {
-            userTaskMap[assignedUser._id].taskCount += 1;
-            if (task.status === "Pending") {
-              userTaskMap[assignedUser._id].pendingTasks += 1;
-            } else if (task.status === "In Progress") {
-              userTaskMap[assignedUser._id].inProgressTasks += 1;
-            } else if (task.status === "Completed") {
-              userTaskMap[assignedUser._id].completedTasks += 1;
-            }
+      if (!task.assignedTo) return;
+
+      const assignedUsers = Array.isArray(task.assignedTo)
+        ? task.assignedTo
+        : [task.assignedTo];
+
+      assignedUsers.forEach((assignedUser) => {
+        const userId = assignedUser._id.toString();
+
+        if (userTaskMap[userId]) {
+          userTaskMap[userId].taskCount += 1;
+
+          if (task.status === "Pending") {
+            userTaskMap[userId].pendingTasks += 1;
+          } else if (task.status === "In-Progress") {
+            userTaskMap[userId].inProgressTasks += 1;
+          } else if (task.status === "Completed") {
+            userTaskMap[userId].completedTasks += 1;
           }
-        });
-      }
+        }
+      });
     });
 
     const workbook = new excelJS.Workbook();
@@ -118,12 +149,12 @@ const exportUsersReport = async (req, res) => {
 
     res.setHeader(
       "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     );
 
     res.setHeader(
       "Content-Disposition",
-      'attachment; filename="users_report.xlsx"'
+      'attachment; filename="users_report.xlsx"',
     );
 
     return workbook.xlsx.write(res).then(() => {
