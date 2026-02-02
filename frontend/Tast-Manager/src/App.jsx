@@ -16,6 +16,8 @@ import PrivateROute from "./routes/PrivateROute";
 import UserProvider, { UserContext } from "./context/userContext";
 import { useContext } from "react";
 import { Toaster } from "react-hot-toast";
+import Home from "./home/Home";
+// import Home from "./pages/Home";
 
 const App = () => {
   return (
@@ -23,6 +25,7 @@ const App = () => {
       <div>
         <Router>
           <Routes>
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
 
@@ -46,7 +49,7 @@ const App = () => {
             </Route>
 
             {/* /* Default Route */}
-            <Route path="/" element={<Root />} />
+            {/* <Route path="/" element={<Root />} /> */}
           </Routes>
         </Router>
       </div>
