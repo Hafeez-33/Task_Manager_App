@@ -1,8 +1,7 @@
 import useUserAuth from "../../hooks/useUserAuth";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../context/userContext";
 import DashboardLayout from "../../components/inputs/DashboardLayout";
-import axios from "axios";
 import axiosInstance from "../../utils/axiosinstance";
 import { API_PATHS } from "../../utils/apiPath";
 import moment from "moment";
@@ -13,53 +12,73 @@ import TaskListTable from "../../components/TaskListTable";
 import CustomBarChart from "../../components/charts/CustomBarChart";
 import CustomPieChart from "../../components/charts/CustomPieChart";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-// import { useEffectEvent, } from "react";
+import { motion } from "framer-motion";
 
 const COLORS = ["#8D51FF", "#00BBDB", "#7BCE00"];
+
+/* Animations */
+const pageVariant = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const staggerContainer = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
 
 const Dashboard = () => {
   useUserAuth();
 
   const { user } = useContext(UserContext);
-
   const navigate = useNavigate();
 
   const [dashboardData, setDashboardData] = useState(null);
   const [pieChartData, setPieChartData] = useState([]);
   const [barChartData, setBarChartData] = useState([]);
 
-  // prepare chart data
   const prepareChartData = (data) => {
-    const taskDistribution = data?.taskDistribution || null;
-    const taskPriorityLevels = data?.taskPriorityLevels || null;
+    const taskDistribution = data?.taskDistribution || {};
+    const taskPriorityLevels = data?.taskPriorityLevels || {};
 
-    const taskDistributionData = [
+    setPieChartData([
       { name: "Pending", count: taskDistribution?.Pending || 0 },
       { name: "In Progress", count: taskDistribution?.InProgress || 0 },
       { name: "Completed", count: taskDistribution?.Completed || 0 },
-    ];
+    ]);
 
-    setPieChartData(taskDistributionData);
-
-    const PriorityLevelsData = [
+    setBarChartData([
       { priority: "Low", count: taskPriorityLevels?.Low || 0 },
       { priority: "Medium", count: taskPriorityLevels?.Medium || 0 },
       { priority: "High", count: taskPriorityLevels?.High || 0 },
-    ];
-
-    setBarChartData(PriorityLevelsData);
+    ]);
   };
 
   const getDashboardData = async () => {
     try {
       const response = await axiosInstance.get(
-        API_PATHS.TASKS.GET_DASHBOARD_DATA,
+        API_PATHS.TASKS.GET_DASHBOARD_DATA
       );
-
       if (response.data) {
         setDashboardData(response.data);
-        prepareChartData(response.data?.charts || null);
+        prepareChartData(response.data?.charts);
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -72,103 +91,271 @@ const Dashboard = () => {
 
   useEffect(() => {
     getDashboardData();
-
-    return () => {};
   }, []);
 
   return (
     <DashboardLayout activeMenu="Dashboard">
-      <div className="card my-5">
-        <div>
-          <div className="col-span-3">
-            <h2 className="text-xl md:text-2xl">Good Morning! {user?.name}</h2>
-            <p className="text-xs md:text-[13px] text-gray-500 mt-2">
-              {moment().format("dddd Do MMM YYYY")}
-            </p>
-          </div>
-        </div>
+      <motion.div variants={pageVariant} initial="hidden" animate="show">
+        {/* Greeting Card */}
+        <motion.div variants={cardVariant} className="card my-5">
+          <h2 className="text-xl md:text-2xl">
+            Good Morning! {user?.name}
+          </h2>
+          <p className="text-xs md:text-[13px] text-gray-500 mt-2">
+            {moment().format("dddd Do MMM YYYY")}
+          </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-5">
-          <InfoCard
-            label="Total Tasks"
-            value={addThousandsSeparstor(
-              dashboardData?.charts?.taskDistribution?.All || 0,
-            )}
-            color="bg-primary"
-          />
+          {/* Info Cards */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5"
+          >
+            <motion.div variants={cardVariant}>
+              <InfoCard
+                label="Total Tasks"
+                value={addThousandsSeparstor(
+                  dashboardData?.charts?.taskDistribution?.All || 0
+                )}
+                color="bg-primary"
+              />
+            </motion.div>
 
-          <InfoCard
-            label="Pending Tasks"
-            value={addThousandsSeparstor(
-              dashboardData?.charts?.taskDistribution?.Pending || 0,
-            )}
-            color="bg-violet-500"
-          />
+            <motion.div variants={cardVariant}>
+              <InfoCard
+                label="Pending Tasks"
+                value={addThousandsSeparstor(
+                  dashboardData?.charts?.taskDistribution?.Pending || 0
+                )}
+                color="bg-violet-500"
+              />
+            </motion.div>
 
-          <InfoCard
-            label="In Progress Tasks"
-            value={addThousandsSeparstor(
-              dashboardData?.charts?.taskDistribution?.InProgress || 0,
-            )}
-            color="bg-cyan-500"
-          />
+            <motion.div variants={cardVariant}>
+              <InfoCard
+                label="In Progress Tasks"
+                value={addThousandsSeparstor(
+                  dashboardData?.charts?.taskDistribution?.InProgress || 0
+                )}
+                color="bg-cyan-500"
+              />
+            </motion.div>
 
-          <InfoCard
-            label="Completed Tasks"
-            value={addThousandsSeparstor(
-              dashboardData?.charts?.taskDistribution?.Completed || 0,
-            )}
-            color="bg-lime-500"
-          />
-        </div>
-      </div>
+            <motion.div variants={cardVariant}>
+              <InfoCard
+                label="Completed Tasks"
+                value={addThousandsSeparstor(
+                  dashboardData?.charts?.taskDistribution?.Completed || 0
+                )}
+                color="bg-lime-500"
+              />
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 md:my-6"> */}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 md:my-6">
-        <div>
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <h5 className="font-medium">Task Distribution</h5>
-            </div>
-
+        {/* Charts Section */}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="grid md:grid-cols-2 gap-6 my-6"
+        >
+          <motion.div variants={cardVariant} className="card">
+            <h5 className="font-medium mb-4">Task Distribution</h5>
             <CustomPieChart data={pieChartData} colors={COLORS} />
-          </div>
-        </div>
+          </motion.div>
 
-        <div>
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <h5 className="font-medium">Task Priority Levels</h5>
-            </div>
-
-            {/* {barChartData.every((item) => item.count === 0) && (
-              <p className="text-sm text-gray-400 text-center mt-10">
-                No priority data available
-              </p>
-            )} */}
-
+          <motion.div variants={cardVariant} className="card">
+            <h5 className="font-medium mb-4">Task Priority Levels</h5>
             <CustomBarChart data={barChartData} />
+          </motion.div>
+        </motion.div>
+
+        {/* Recent Tasks */}
+        <motion.div variants={cardVariant} className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h5 className="text-lg">Recent Tasks</h5>
+            <button className="card-btn" onClick={onSeeMore}>
+              See All <LuArrowRight />
+            </button>
           </div>
-        </div>
-
-        <div className="md:col-span-2">
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <h5 className="text-lg ">Recent Tasks</h5>
-
-              <button className="card-btn" onClick={onSeeMore}>
-                See All <LuArrowRight className="text-base" />
-              </button>
-            </div>
-
-            <TaskListTable tableData={dashboardData?.recentTasks || []} />
-          </div>
-        </div>
-      </div>
-      {/* </div> */}
+          <TaskListTable tableData={dashboardData?.recentTasks || []} />
+        </motion.div>
+      </motion.div>
     </DashboardLayout>
   );
 };
 
 export default Dashboard;
+
+
+// import useUserAuth from "../../hooks/useUserAuth";
+// import { useContext, useState } from "react";
+// import { UserContext } from "../../context/userContext";
+// import DashboardLayout from "../../components/inputs/DashboardLayout";
+// import axios from "axios";
+// import axiosInstance from "../../utils/axiosinstance";
+// import { API_PATHS } from "../../utils/apiPath";
+// import moment from "moment";
+// import { addThousandsSeparstor } from "../../utils/helper";
+// import InfoCard from "../../components/Cards/InfoCard";
+// import { LuArrowRight } from "react-icons/lu";
+// import TaskListTable from "../../components/TaskListTable";
+// import CustomBarChart from "../../components/charts/CustomBarChart";
+// import CustomPieChart from "../../components/charts/CustomPieChart";
+// import { useNavigate } from "react-router-dom";
+// import { useEffect } from "react";
+// // import { useEffectEvent, } from "react";
+
+// const COLORS = ["#8D51FF", "#00BBDB", "#7BCE00"];
+
+// const Dashboard = () => {
+//   useUserAuth();
+
+//   const { user } = useContext(UserContext);
+
+//   const navigate = useNavigate();
+
+//   const [dashboardData, setDashboardData] = useState(null);
+//   const [pieChartData, setPieChartData] = useState([]);
+//   const [barChartData, setBarChartData] = useState([]);
+
+//   // prepare chart data
+//   const prepareChartData = (data) => {
+//     const taskDistribution = data?.taskDistribution || null;
+//     const taskPriorityLevels = data?.taskPriorityLevels || null;
+
+//     const taskDistributionData = [
+//       { name: "Pending", count: taskDistribution?.Pending || 0 },
+//       { name: "In Progress", count: taskDistribution?.InProgress || 0 },
+//       { name: "Completed", count: taskDistribution?.Completed || 0 },
+//     ];
+
+//     setPieChartData(taskDistributionData);
+
+//     const PriorityLevelsData = [
+//       { priority: "Low", count: taskPriorityLevels?.Low || 0 },
+//       { priority: "Medium", count: taskPriorityLevels?.Medium || 0 },
+//       { priority: "High", count: taskPriorityLevels?.High || 0 },
+//     ];
+
+//     setBarChartData(PriorityLevelsData);
+//   };
+
+//   const getDashboardData = async () => {
+//     try {
+//       const response = await axiosInstance.get(
+//         API_PATHS.TASKS.GET_DASHBOARD_DATA,
+//       );
+
+//       if (response.data) {
+//         setDashboardData(response.data);
+//         prepareChartData(response.data?.charts || null);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching dashboard data:", error);
+//     }
+//   };
+
+//   const onSeeMore = () => {
+//     navigate("/admin/tasks");
+//   };
+
+//   useEffect(() => {
+//     getDashboardData();
+
+//     return () => {};
+//   }, []);
+
+//   return (
+//     <DashboardLayout activeMenu="Dashboard">
+//       <div className="card my-5">
+//         <div>
+//           <div className="col-span-3">
+//             <h2 className="text-xl md:text-2xl">Good Morning! {user?.name}</h2>
+//             <p className="text-xs md:text-[13px] text-gray-500 mt-2">
+//               {moment().format("dddd Do MMM YYYY")}
+//             </p>
+//           </div>
+//         </div>
+
+//         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-5">
+//           <InfoCard
+//             label="Total Tasks"
+//             value={addThousandsSeparstor(
+//               dashboardData?.charts?.taskDistribution?.All || 0,
+//             )}
+//             color="bg-primary"
+//           />
+
+//           <InfoCard
+//             label="Pending Tasks"
+//             value={addThousandsSeparstor(
+//               dashboardData?.charts?.taskDistribution?.Pending || 0,
+//             )}
+//             color="bg-violet-500"
+//           />
+
+//           <InfoCard
+//             label="In Progress Tasks"
+//             value={addThousandsSeparstor(
+//               dashboardData?.charts?.taskDistribution?.InProgress || 0,
+//             )}
+//             color="bg-cyan-500"
+//           />
+
+//           <InfoCard
+//             label="Completed Tasks"
+//             value={addThousandsSeparstor(
+//               dashboardData?.charts?.taskDistribution?.Completed || 0,
+//             )}
+//             color="bg-lime-500"
+//           />
+//         </div>
+//       </div>
+
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4 md:my-6">
+//         <div>
+//           <div className="card">
+//             <div className="flex items-center justify-between">
+//               <h5 className="font-medium">Task Distribution</h5>
+//             </div>
+
+//             <CustomPieChart data={pieChartData} colors={COLORS} />
+//           </div>
+//         </div>
+
+//         <div>
+//           <div className="card">
+//             <div className="flex items-center justify-between">
+//               <h5 className="font-medium">Task Priority Levels</h5>
+//             </div>
+
+          
+
+//             <CustomBarChart data={barChartData} />
+//           </div>
+//         </div>
+
+//         <div className="md:col-span-2">
+//           <div className="card">
+//             <div className="flex items-center justify-between">
+//               <h5 className="text-lg ">Recent Tasks</h5>
+
+//               <button className="card-btn" onClick={onSeeMore}>
+//                 See All <LuArrowRight className="text-base" />
+//               </button>
+//             </div>
+
+//             <TaskListTable tableData={dashboardData?.recentTasks || []} />
+//           </div>
+//         </div>
+//       </div>
+//       {/* </div> */}
+//     </DashboardLayout>
+//   );
+// };
+
+// export default Dashboard;
