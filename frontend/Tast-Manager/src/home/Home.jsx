@@ -1,17 +1,18 @@
-import CTAA from "./homeComponents/CTAA";
+import Navbarr from "./homeComponents/Navbarr";
+import Hero from "./homeComponents/Hero";
+import SocialProof from "./homeComponents/SocialProof"
 import Featuress from "./homeComponents/Featuress";
+import HowItWorks from "./homeComponents/HowItWorks";
+import ProductPreview from "./homeComponents/ProductPreview";
+import WhyChooseUs from "./homeComponents/WhyChooseUs";
+import CTAA from "./homeComponents/CTAA";
 import Footerr from "./homeComponents/Footerr";
-import Hero from "./homeComponents/hero";
-import HowItWorks from "./homeComponents/howItWorks";
-import Navbar from "./homeComponents/navbar";
-import ProductPreview from "./homeComponents/productPreview";
-import SocialProof from "./homeComponents/socialProof";
-import WhyChooseUs from "./homeComponents/whyChooseUs";
+
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
-      <Navbar />
+      <Navbarr />
       <Hero />
       <SocialProof />
       <Featuress />
