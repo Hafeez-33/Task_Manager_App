@@ -13,12 +13,30 @@ analytics dashboard, and smooth UI animations.
 - Framer Motion animations
 - Responsive dashboard UI
 
+## Admin features
+- Create, update, delete tasks
+- Assign tasks to users
+- Set task priority, due dates, and checklists
+- Dashboard with analytics (Pie & Bar charts)
+- View all users with task distribution
+- Export Tasks & Users reports to Excel
+- Delete tasks with confirmation modal
+
+
+## user features
+
+- View assigned tasks
+- Track task status (Pending / In-Progress / Completed)
+- View task details & progress
+- Dashboard with task insights
+
 ## 🛠 Tech Stack
 
 **Frontend**
 - React + Vite
 - Tailwind CSS
 - Framer Motion
+- Axios
 - React Router DOM
 
 **Backend**
@@ -26,6 +44,11 @@ analytics dashboard, and smooth UI animations.
 - Express.js
 - MongoDB + Mongoose
 - JWT Authentication
+- ExcelJS
+
+## tools and deployment
+- Git & Github
+- Render
 
 ## ⚙️ Environment Variables
 
@@ -55,6 +78,13 @@ Task_Manager_App/
 │   └── utils
 
 
+
+#Author
+
+M Abdul Hafeez
+📧 Email: mabdulhafeez.fa@gmail.com
+💼 LinkedIn: www.linkedin.com/in/m-abdul-hafeez
+🐙 GitHub: https://github.com/Hafeez-33
 
 
 
