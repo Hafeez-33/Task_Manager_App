@@ -27,6 +27,17 @@ analytics dashboard, and smooth UI animations.
 - MongoDB + Mongoose
 - JWT Authentication
 
+## ⚙️ Environment Variables
+
+### Backend (.env)
+PORT=5000
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+ADMIN_INVITE_TOKEN=your_admin_token
+
+### Frontend (.env)
+VITE_API_BASE_URL=http://localhost:5000
+
 
 ## 📂 Project Structure
 
@@ -42,5 +53,8 @@ Task_Manager_App/
 │   ├── pages
 │   ├── context
 │   └── utils
+
+
+
 
 
