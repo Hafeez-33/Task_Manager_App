@@ -63,9 +63,19 @@ const Login = () => {
 
       const { token, role } = response.data;
 
+      // if (token) {
+      //   localStorage.setItem("token", token);
+      //   updateUser(response.data);
+
+      //   role === "admin"
+      //     ? navigate("/admin/dashboard")
+      //     : navigate("/user/dashboard");
+      // }
+
       if (token) {
         localStorage.setItem("token", token);
-        updateUser(response.data);
+
+        await updateUser(); 
 
         role === "admin"
           ? navigate("/admin/dashboard")
@@ -74,7 +84,7 @@ const Login = () => {
     } catch (error) {
       setError(
         error.response?.data?.message ||
-          "Something went wrong. Please try again later."
+          "Something went wrong. Please try again later.",
       );
     }
   };
@@ -87,10 +97,7 @@ const Login = () => {
         animate="show"
         className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center"
       >
-        <motion.h3
-          variants={item}
-          className="text-xl font-semibold text-black"
-        >
+        <motion.h3 variants={item} className="text-xl font-semibold text-black">
           Welcome Back
         </motion.h3>
 
@@ -139,10 +146,7 @@ const Login = () => {
             LOGIN
           </motion.button>
 
-          <motion.p
-            variants={item}
-            className="text-[13px] text-slate-800 mt-3"
-          >
+          <motion.p variants={item} className="text-[13px] text-slate-800 mt-3">
             Don&apos;t have an account?{" "}
             <Link className="font-medium text-primary underline" to="/signup">
               Sign Up
@@ -155,8 +159,6 @@ const Login = () => {
 };
 
 export default Login;
-
-
 
 // import React, { useContext, useState } from 'react'
 // import AuthLayout from '../../components/AuthLayout'
@@ -220,7 +222,7 @@ export default Login;
 //       }
 //     }
 //   };
-  
+
 //   return (
 //     <AuthLayout>
 //       <div className='lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center'>
