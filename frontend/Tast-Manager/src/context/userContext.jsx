@@ -30,9 +30,9 @@ const UserProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  const updateUser = () => {
+  const updateUser = async() => {
     // 🚀 DO NOT set user from login/signup response
-    fetchUser();
+    await fetchUser();
   };
 
   const clearUser = () => {
