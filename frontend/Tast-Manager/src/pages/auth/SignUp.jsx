@@ -88,19 +88,51 @@ const SignUp = () => {
         adminInviteToken,
       });
 
-      const { token, role } = response.data;
+      // const { token, role } = response.data;
+      // if (token) {
+      //   localStorage.setItem("token", token);
+      //   updateUser(response.data);
+      //   role === "admin"
+      //     ? navigate("/admin/dashboard")
+      //     : navigate("/user/dashboard");
+      // }
+
+      // const { token, user } = response.data;
+
+      // if (token && user) {
+      //   localStorage.setItem("token", token); // save token ONCE
+      //   updateUser(user); // pass only user
+
+      //   user.role === "admin"
+      //     ? navigate("/admin/dashboard")
+      //     : navigate("/user/dashboard");
+      // }
 
       if (token) {
         localStorage.setItem("token", token);
-        updateUser(response.data);
+        await updateUser(); // 🔥 fetch real user
         role === "admin"
           ? navigate("/admin/dashboard")
           : navigate("/user/dashboard");
       }
+
+      // const { token, user } = response.data;
+      // if (token && user) {
+      //   localStorage.setItem("token", token);
+      //   // Update context with correct structure
+      //   updateUser({
+      //     user,
+      //     token,
+      //   });
+
+      //   user.role === "admin"
+      //     ? navigate("/admin/dashboard")
+      //     : navigate("/user/dashboard");
+      // }
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Something went wrong. Please try again later."
+          "Something went wrong. Please try again later.",
       );
     }
   };
@@ -113,11 +145,8 @@ const SignUp = () => {
         animate="show"
         className="lg:w-[100%] h-auto md:h-full mt-10 md:m-0 flex flex-col justify-center"
       >
-        <motion.h3
-          variants={item}
-          className="text-xl font-semibold text-black"
-        >
-          Create an Account 
+        <motion.h3 variants={item} className="text-xl font-semibold text-black">
+          Create an Account
         </motion.h3>
 
         <motion.p
@@ -130,10 +159,7 @@ const SignUp = () => {
         <motion.form variants={container} onSubmit={handleSignUp}>
           {/* Profile Photo */}
           <motion.div variants={photoAnim}>
-            <ProfilePhotoSelector
-              image={profilePic}
-              setImage={setProfilePic}
-            />
+            <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
           </motion.div>
 
           {/* Inputs */}
@@ -205,10 +231,7 @@ const SignUp = () => {
             SIGN UP
           </motion.button>
 
-          <motion.p
-            variants={item}
-            className="text-[13px] text-slate-800 mt-3"
-          >
+          <motion.p variants={item} className="text-[13px] text-slate-800 mt-3">
             Already have an account?{" "}
             <Link className="font-medium text-primary underline" to="/login">
               Login
@@ -221,7 +244,6 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
 
 // import React, { useContext, useState } from "react";
 // import AuthLayout from "../../components/AuthLayout";
@@ -364,12 +386,10 @@ export default SignUp;
 //             <p className="text-{13px} text-slate-800 mt-3">
 //               Already have an account?{" "}
 //               <Link className="font-medium text-primary underline" to="/login">
-//                 Login 
+//                 Login
 //               </Link>
 //             </p>
 
-
-          
 //         </form>
 //       </div>
 //     </AuthLayout>
