@@ -30,6 +30,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://task-manager-app-k7hc.vercel.app",
+      "https://task-manager-app-lemon-eta.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
