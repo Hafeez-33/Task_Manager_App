@@ -88,18 +88,18 @@ const SignUp = () => {
         adminInviteToken,
       });
 
-      // const { token, role } = response.data;
-      // if (token) {
-      //   localStorage.setItem("token", token);
-      //   updateUser(response.data);
-      //   role === "admin"
-      //     ? navigate("/admin/dashboard")
-      //     : navigate("/user/dashboard");
-      // }
+      const { token, role } = response.data;
+      if (token) {
+        localStorage.setItem("token", token);
+        updateUser(response.data);
+        role === "admin"
+          ? navigate("/admin/dashboard")
+          : navigate("/user/dashboard");
+      }
 
       // const { token, user } = response.data;
 
-      // if (token && user) {
+      // if (token) {
       //   localStorage.setItem("token", token); // save token ONCE
       //   updateUser(user); // pass only user
 
@@ -107,14 +107,6 @@ const SignUp = () => {
       //     ? navigate("/admin/dashboard")
       //     : navigate("/user/dashboard");
       // }
-
-      if (token) {
-        localStorage.setItem("token", token);
-        await updateUser(); // 🔥 fetch real user
-        role === "admin"
-          ? navigate("/admin/dashboard")
-          : navigate("/user/dashboard");
-      }
 
       // const { token, user } = response.data;
       // if (token && user) {

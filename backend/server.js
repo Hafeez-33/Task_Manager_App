@@ -14,6 +14,9 @@ const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
 
+// CONNECT DATABASE
+connectDB();
+
 //Middleware to handle cors
 // app.use(
 //     cors({
@@ -30,6 +33,7 @@ app.use(
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
   }),
 );
 
